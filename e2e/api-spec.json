@@ -210,6 +210,12 @@
                 "C"
               ]
             }
+          },
+          "kittenIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "required": [
@@ -221,7 +227,8 @@
           "urls",
           "_options",
           "enum",
-          "enumArr"
+          "enumArr",
+          "kittenIds"
         ]
       }
     }
@@ -419,6 +426,14 @@
         "responses": {
           "200": {
             "description": "The found record",
+            "links": {
+              "GetCatByKittenIds": {
+                "operationId": "CatsController_findOne",
+                "parameters": {
+                  "id": "$response.body#/kittenIds"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -651,6 +666,14 @@
         "responses": {
           "201": {
             "description": "The record has been successfully created.",
+            "links": {
+              "GetCatByKittenIds": {
+                "operationId": "CatsController_findOne",
+                "parameters": {
+                  "id": "$response.body#/kittenIds"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {

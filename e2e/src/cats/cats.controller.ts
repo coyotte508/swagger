@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiConsumes,
+  ApiDefaultGetter,
   ApiExtension,
   ApiHeader,
   ApiOperation,
@@ -49,6 +50,7 @@ export class CatsController {
     type: Cat
   })
   @ApiExtension('x-auth-type', 'NONE')
+  @ApiDefaultGetter(Cat, 'id')
   findOne(@Param('id') id: string): Cat {
     return this.catsService.findOne(+id);
   }

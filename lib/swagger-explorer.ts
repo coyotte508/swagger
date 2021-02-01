@@ -57,6 +57,14 @@ export class SwaggerExplorer {
   private readonly schemas: Record<string, SchemaObject> = {};
   private operationIdFactory = (controllerKey: string, methodKey: string) =>
     controllerKey ? `${controllerKey}_${methodKey}` : methodKey;
+  private linkNameFactory = (
+    controllerKey: string,
+    methodKey: string,
+    fieldKey: string
+  ) =>
+    controllerKey
+      ? `${controllerKey}_${methodKey}_from_${fieldKey}`
+      : `${methodKey}_from_${fieldKey}`;
 
   constructor(private readonly schemaObjectFactory: SchemaObjectFactory) {}
 
@@ -64,10 +72,18 @@ export class SwaggerExplorer {
     wrapper: InstanceWrapper<Controller>,
     modulePath?: string,
     globalPrefix?: string,
-    operationIdFactory?: (controllerKey: string, methodKey: string) => string
+    operationIdFactory?: (controllerKey: string, methodKey: string) => string,
+    linkNameFactory?: (
+      controllerKey: string,
+      methodKey: string,
+      fieldKey: string
+    ) => string
   ) {
     if (operationIdFactory) {
       this.operationIdFactory = operationIdFactory;
+    }
+    if (linkNameFactory) {
+      this.linkNameFactory = linkNameFactory;
     }
     const { instance, metatype } = wrapper;
     const prototype = Object.getPrototypeOf(instance);
@@ -79,7 +95,12 @@ export class SwaggerExplorer {
       ],
       security: [exploreApiSecurityMetadata],
       tags: [exploreApiTagsMetadata],
-      responses: [exploreApiResponseMetadata.bind(null, this.schemas)]
+      responses: [
+        exploreApiResponseMetadata.bind(null, this.schemas, {
+          operationId: this.operationIdFactory,
+          linkName: this.linkNameFactory
+        })
+      ]
     };
     return this.generateDenormalizedDocument(
       metatype as Type<unknown>,
