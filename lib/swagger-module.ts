@@ -16,10 +16,14 @@ export class SwaggerModule {
   ): OpenAPIObject {
     const swaggerScanner = new SwaggerScanner();
     const document = swaggerScanner.scanApplication(app, options);
-    document.components = {
-      ...(config.components || {}),
-      ...document.components
-    };
+
+    // Merge two levels deep, so that config.components.schemas is merged with document.components.schemas and so on
+    const components = { ...config.components };
+    for (const key of Object.keys(document.components)) {
+      components[key] = { ...components[key], ...document.components[key] };
+    }
+    document.components = components;
+
     return {
       openapi: '3.0.0',
       ...config,

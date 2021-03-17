@@ -14,32 +14,24 @@
   ],
   "servers": [],
   "components": {
-    "securitySchemes": {
-      "basic": {
-        "type": "http",
-        "scheme": "basic"
-      },
-      "bearer": {
-        "scheme": "bearer",
-        "bearerFormat": "JWT",
-        "type": "http"
-      },
-      "oauth2": {
-        "type": "oauth2",
-        "flows": {}
-      },
-      "api_key": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "api_key"
-      },
-      "cookie": {
-        "type": "apiKey",
-        "in": "cookie",
-        "name": "connect.sid"
-      }
-    },
     "schemas": {
+      "Person": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/Cat"
+          },
+          {
+            "$ref": "#/components/schemas/TagDto"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "_resolveType",
+          "mapping": {
+            "cat": "#/components/schemas/Cat",
+            "tag": "#/components/schemas/TagDto"
+          }
+        }
+      },
       "ExtraModel": {
         "type": "object",
         "properties": {
